@@ -2,10 +2,17 @@
 // http://localhost:3000/isolated/exercise/04.js
 
 import React from 'react'
-
+import {useLocalStorageState} from '../utils'
 function Board() {
-  // 🐨 squares is the state for this component. Add useState for squares
-  const squares = Array(9).fill(null)
+  const [squares, setSquares] = useLocalStorageState(
+    'squares',
+    Array(9).fill(null),
+  )
+  
+
+  const nextValue = calculateNextValue(squares)
+  const winner = calculateWinner(squares)
+  const status = calculateStatus(winner, squares, nextValue)
 
   // 🐨 We'll need the following bits of derived state:
   // - nextValue ('X' or 'O')
@@ -26,12 +33,18 @@ function Board() {
     // 🐨 make a copy of the squares array (💰 `[...squares]` will do it!)
     // 🐨 Set the value of the square that was selected
     // 💰 `squaresCopy[square] = nextValue`
-    //
     // 🐨 set the squares to your copy
+    if (winner || squares[square]) {
+      console.log('squares[square]', squares[square])
+      return
+    }
+    const squaresCopy = [...squares]
+    squaresCopy[square] = nextValue
+    setSquares(squaresCopy)
   }
 
   function restart() {
-    // 🐨 set the squares to `Array(9).fill(null)`
+    setSquares(Array(9).fill(null))
   }
 
   function renderSquare(i) {
@@ -44,8 +57,7 @@ function Board() {
 
   return (
     <div>
-      {/* 🐨 put the status here */}
-      <div className="status">STATUS</div>
+      <div className="status">{status}</div>
       <div className="board-row">
         {renderSquare(0)}
         {renderSquare(1)}
